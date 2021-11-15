@@ -1,4 +1,4 @@
-function particles = UpdatePositions(deltaR, particles, L)
+function particles = UpdatePositions(particles, deltaR, L)
     for i = 1:size(particles, 1)
         particles(i, :) = particles(i, :) + deltaR(i, :);
     end
