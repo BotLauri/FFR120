@@ -5,11 +5,11 @@ tic
 N = 100; % Number of particles. 
 L = 100; % Side length. 
 Rf = 1; % Interaction radius. 
-eta = 0.1; % Noise level.
-deltaT = 0.1; % Time step.
+eta = 0.01; % Noise level.
+deltaT = 1; % Time step.
 v = 1; % Speed.
 rho = N/L^2; % Particle density.
-S = 10^4; % Time steps.
+S = 10^3; % Time steps.
 
 % Exercise 8.1a)
 %r = InitializePositions(N, L); % Random initialization. 
