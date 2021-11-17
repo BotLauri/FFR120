@@ -10,21 +10,26 @@ deltaT = 1; % Time step.
 v = 3; % Speed.
 rho = N/L^2; % Particle density.
 S = 10^4; % Time steps.
+T = 1; % Trials.
+
+for t = 1:T
 
 %r = InitializePositions(N, L); % Random initialization. 
 %save('initialRDelay', 'r');
 load('initialRDelay', 'r');
 initialR = r;
+%theta = InitializeOrientations(N); % Random initialization. 
 load('initialTheta', 'theta');
 
 % Exercise 8.8 / 8.9
-%H = [0:25]; % Change this depending on what excerise (8.8 / 8.9).
-H = [-15, -5, -1]; % Remember to change UpdateOrientationWithDelay aswell!
+H = [0:25]; % Change this depending on what excerise (8.8 / 8.9).
+%H = [-15:-1]; % Remember to change UpdateOrientationWithDelay aswell!
 globAlignCoeff = zeros(length(H), S);
 globClustCoeff = zeros(length(H), S);
+
 for h = 1:length(H)
-load('initialRDelay', 'r');    
-load('initialTheta', 'theta');
+%load('initialRDelay', 'r');    
+%load('initialTheta', 'theta');
     
 oldThetas = {}; oldThetas{end + 1} = {theta};
 for m = 1:S
@@ -35,7 +40,7 @@ for m = 1:S
     
     if (H(h) < 0)
         predTheta = UpdateOrientationWithDelay(theta, isNeighbour, eta, deltaT, H(h), oldThetas);
-        velocities = UpdateVelocities(v, theta);
+        velocities = UpdateVelocities(v, predTheta);
         deltaR = velocities.*deltaT;
         r = UpdatePositions(r, deltaR, L);
         theta = UpdateOrientation(theta, isNeighbour, eta, deltaT);
@@ -84,10 +89,23 @@ end
 
 disp(H(h))
 
+end % H loop.
+
+if (t == 1)
+    oldGlobAlignCoeff = globAlignCoeff;
+    oldGlobClustCoeff = globClustCoeff;
+else
+    meanGlobAlignCoeff = (oldGlobAlignCoeff + globAlignCoeff)/2;
+    meanGlobClustCoeff = (oldGlobClustCoeff + globClustCoeff)/2;
+    oldGlobAlignCoeff = globAlignCoeff;
+    oldGlobClustCoeff = globClustCoeff;
 end
 
-toc
+t
 
+end % T loop.
+
+toc
 
 %% Plots positive h.
 
@@ -127,13 +145,6 @@ axis equal
 axis([-3/2*L 3/2*L -3/2*L 3/2*L])
 title('Distribution after 10^4 timesteps for h = 25.')
 
-subplot(2, 5, [4, 10])
-hold on
-plot(globAlignCoeff)
-plot(globClustCoeff)
-legend('ψ', 'c')
-hold off
-
 %save('globalAlignmentCoefficient', 'globAlignCoeff');
 %save('globalClusteringCoefficient', 'globClustCoeff');
 
@@ -168,8 +179,8 @@ title('Distribution after 10^4 timesteps for h = -15.')
 
 %% Plot statistics. 
 
-globAlignCoeffEnd = globAlignCoeff(:, 5001:10000);
-globClustCoeffEnd = globClustCoeff(:, 5001:10000);
+globAlignCoeffEnd = meanGlobAlignCoeff(:, 5001:10000);
+globClustCoeffEnd = meanGlobClustCoeff(:, 5001:10000);
 for i = 1:size(globClustCoeffEnd, 1)
     meanAlign(i) = mean(globAlignCoeffEnd(i, :));
     meanClust(i) = mean(globClustCoeffEnd(i, :));
@@ -179,4 +190,16 @@ end
 hold on
 errorbar(H, meanAlign, errorAlign);
 errorbar(H, meanClust, errorClust);
+legend('ψ', 'c')
+hold off
+
+%save('meanGlobalAlignmentCoefficient', 'meanGlobAlignCoeff');
+%save('meanGlobalClusteringCoefficient', 'meanGlobClustCoeff');
+
+%% Other plots.
+
+hold on
+plot(globAlignCoeff(3, :))
+plot(globClustCoeff(3, :))
+legend('ψ', 'c')
 hold off
