@@ -4,7 +4,7 @@ tic
 % Setup.
 N = 1000; % Number of particles. 
 L = 100; % Side length. 
-Rf = 1; % Interaction radius. 
+Rf = 10; % Interaction radius. 
 eta = 0.1; % Noise level.
 deltaT = 1; % Time step.
 v = 1; % Speed.
