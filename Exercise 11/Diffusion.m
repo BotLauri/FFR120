@@ -2,10 +2,11 @@ function lattice = Diffusion(lattice, d)
     L = length(lattice);
     for i = 1:L
         for j = 1:L
-            numberOfAgents = length(lattice{i,j});
+            numberOfAgents = size(lattice{i,j}, 2);
             for n = 1:numberOfAgents
                 r = rand();
                 if (d > r)
+                    savedAgent = lattice{i,j}(1);
                     lattice{i,j}(1) = [];
                     direction = randi(4);
                     if (direction == 1)
@@ -37,7 +38,7 @@ function lattice = Diffusion(lattice, d)
                             x = i + 1;
                         end
                     end
-                    lattice{x, y}{end + 1} = 1;
+                    lattice{x, y} = [lattice{x, y}, savedAgent];
                 end
             end
         end
