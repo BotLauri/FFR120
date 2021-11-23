@@ -5,25 +5,40 @@ L = 100; % Length of the lattice.
 N = 1000; % Number of agents. 
 initialInfectionRate = 0.01;
 d = 0.8; % Probability of moving. 
-gammas = [0.01:0.007:0.1]; % Probability of recovery.
-betas = [0.01:0.03:1]; % Probability of infection. 
-[betaList, gammaList] = meshgrid(betas, gammas);
-params = [betaList(:), gammaList(:)];
-trials = 1;
 
-betaGammas = [1:3:100];
-[betaList, betaGammaList] = meshgrid(betas, betas./betaGammas);
-params = [betaList(:), betaGammaList(:)];
+% Plotting parameters. 
+%gammas = 0.01; % Probability of recovery.
+%betas = 0.2; % Probability of infection. 
+%params = [betas, gammas];
+%trials = 1;
 
+% Parameters for 11.1b.
 %gammas = 0.02;
 %betas = [0.01:0.02:1];
 %trials = 5;
 
+% Parameters for 11.1d.
+%gammas = [0.01:0.007:0.1];
+%betas = [0.01:0.03:1]; 
+%[betaList, gammaList] = meshgrid(betas, gammas);
+%params = [betaList(:), gammaList(:)];
+%trials = 1;
+
+% Parameters for 11.2c.
+betaGammas = [1:3:80];
+betas = [0.01:0.04:1];
+params = zeros(length(betaGammas)*length(betas), 2);
+for i = 1:length(betaGammas)
+    params((((i-1)*length(betas) + 1):(i-1)*length(betas) + length(betas)), 1) = betas;
+    params((((i-1)*length(betas) + 1):(i-1)*length(betas) + length(betas)), 2) = betas(:) ./ betaGammas(i);
+end
+trials = 2;
+
 for m = 1:trials
 disp(m)
 
-data = zeros(length(gammas)*length(betas), 6);
-for T = 1:(length(gammas)*length(betas))
+data = zeros(length(params), 6);
+for T = 1:length(params)
 beta = params(T, 1); gamma = params(T, 2);
 t = 0; % Number of timesteps. 
 SIR = [];
@@ -40,7 +55,7 @@ for n = 1:(N - N*initialInfectionRate)
 end
 
 % Main loop.
-while (~CheckForInfected(lattice))
+while (~CheckForInfected(lattice) && (t < 5000))
     lattice = Diffusion(lattice, d);
     lattice = Infection(lattice, beta);
     lattice = Recovery(lattice, gamma);
@@ -71,7 +86,7 @@ end
 end % Loop through trials. 
 
 %save('dataVaryingBetaGamma', 'data');
-%save('dataVaryingBetaBetagamma', 'data');
+%save('dataVaryingBetaBetagamma', 'avgData');
 %save('dataGamma_01', 'avgData');
 %save('dataGamma_02', 'avgData');
 
@@ -91,22 +106,42 @@ xlabel('\beta')
 ylabel('R_\infty')
 hold off
 
-%% Plot of parameters beta and gamma.
+%% R_inf as a function of beta/gamma.
+load('dataGamma_01', 'avgData');
+gamma01 = avgData;
+load('dataGamma_02', 'avgData');
+gamma02 = avgData;
+hold on 
+scatter(gamma01(:, 1) / gamma01(1, 2), gamma01(:, 5))
+scatter(gamma02(:, 1) / gamma02(1, 2), gamma02(:, 5))
+title('R_\infty as a function of \beta / \gamma averaged over 5 iterations.')
+legend('\gamma = 0.01', '\gamma = 0.02', 'Location', 'northwest')
+xlabel('\beta / \gamma')
+ylabel('R_\infty')
+hold off
+
+%% Phase diagram of R_inf as a function of beta and beta.
+lenGammas = 13; lenBetas = 34;
 load('dataVaryingBetaGamma', 'data');
-Rinf = data(:, 5);
-Rinf = reshape(Rinf, [length(gammas), length(betas)]);
+betas = data(:, 1); gammas = data(:, 2); Rinf = data(:, 5);
+Rinf = reshape(Rinf, [lenGammas, lenBetas]);
 imagesc([betas(1) betas(end)], [gammas(1) gammas(end)], Rinf)
 colorbar
 xlabel('\beta')
 ylabel('\gamma')
 title('R_\infty as a function of \beta and \gamma.')
+set(gca,'YDir','normal')
 
-%% Plot of parameters beta and beta/gamma.
-load('dataVaryingBetaBetagamma', 'data');
-Rinf = data(:, 5);
-Rinf = reshape(Rinf, [length(gammas), length(betas)]);
-imagesc([betas(1) betas(end)], [gammas(1) gammas(end)], Rinf)
+%% Phase diagram of R_inf as a function of beta and beta/gamma.
+lenBetaGammas = 27; lenBetas = 25;
+load('dataVaryingBetaBetagamma', 'avgData');
+betas = avgData(:, 1);
+betaGammas = avgData(:, 1) ./ avgData(:, 2);
+Rinf = avgData(:, 5);
+Rinf = reshape(Rinf, [lenBetas, lenBetaGammas]);
+imagesc([betas(1) betas(end)], [betaGammas(1) betaGammas(end)], Rinf')
 colorbar
 xlabel('\beta')
 ylabel('\beta / \gamma')
-title('R_\infty as a function of \beta and \beta / \gamma.')
+title('R_\infty as a function of \beta and \beta / \gamma averaged over 2 iterations.')
+set(gca,'YDir','normal')
