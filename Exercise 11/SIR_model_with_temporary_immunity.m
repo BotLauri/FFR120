@@ -81,7 +81,7 @@ end % Loop through trials.
 
 toc
 
-%% R_inf as a function of mu. 
+%% R_inf/5000 as a function of mu. 
 load('dataAlpha', 'avgData');
 index11 = (avgData(:, 1) == 0.1).*(avgData(:, 2) == 0.01);
 index12 = (avgData(:, 1) == 0.1).*(avgData(:, 2) == 0.02);
@@ -92,9 +92,9 @@ scatter(avgData(find(index11), 3), avgData(find(index11), 6))
 scatter(avgData(find(index12), 3), avgData(find(index12), 6))
 scatter(avgData(find(index21), 3), avgData(find(index21), 6))
 scatter(avgData(find(index22), 3), avgData(find(index22), 6))
-title('R_\infty as a function of \mu averaged over 5 iterations for different \beta and \gamma.')
+title('R_{\infty / 5000} as a function of \alpha averaged over 5 iterations for different \beta and \gamma.')
 legend('\beta = 0.1, \gamma = 0.01', '\beta = 0.1, \gamma = 0.02', '\beta = 0.2, \gamma = 0.01', ... 
         '\beta = 0.2, \gamma = 0.02', 'Location', 'northeast')
-xlabel('\mu')
-ylabel('D_\infty')
+xlabel('\alpha')
+ylabel('R_{\infty / 5000}')
 hold off

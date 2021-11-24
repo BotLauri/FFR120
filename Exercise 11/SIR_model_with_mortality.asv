@@ -8,11 +8,8 @@ d = 0.8; % Probability of moving.
 
 % Parameters for 11.3.
 betas = [0.1, 0.2]; 
-betas = 0.5;
 gammas = [0.01, 0.02]; 
-gammas = 0.01;
 mu = [0.015:0.0015:0.015*3]; % Probability of death when infected.
-mu = [0.01:0.04:1];
 [betaList, gammaList, muList] = meshgrid(betas, gammas, mu);
 params = [betaList(:), gammaList(:), muList(:)];
 trials = 1;
@@ -69,8 +66,7 @@ end
 
 end % Loop through trials. 
 
-%save('dataMu', 'avgData');
-%save('dataMu3', 'avgData');
+%save('dataMu4', 'avgData');
 
 toc
 
@@ -81,6 +77,17 @@ index11_2 = (avgData2(:, 1) == 0.5).*(avgData2(:, 2) == 0.001);
 index12_2 = (avgData2(:, 1) == 0.5).*(avgData2(:, 2) == 0.01);
 index21_2 = (avgData2(:, 1) == 1).*(avgData2(:, 2) == 0.001);
 index22_2 = (avgData2(:, 1) == 1).*(avgData2(:, 2) == 0.01);
+load('dataMu3', 'avgData');
+avgData2 = avgData;
+index11_2 = (avgData2(:, 1) == 0.5).*(avgData2(:, 2) == 0.001);
+index12_2 = (avgData2(:, 1) == 0.5).*(avgData2(:, 2) == 0.01);
+index21_2 = (avgData2(:, 1) == 1).*(avgData2(:, 2) == 0.001);
+index22_2 = (avgData2(:, 1) == 1).*(avgData2(:, 2) == 0.01);
+load('dataMu4', 'avgData');
+index11 = (avgData(:, 1) == 0.1).*(avgData(:, 2) == 0.01);
+index12 = (avgData(:, 1) == 0.1).*(avgData(:, 2) == 0.02);
+index21 = (avgData(:, 1) == 0.2).*(avgData(:, 2) == 0.01);
+index22 = (avgData(:, 1) == 0.2).*(avgData(:, 2) == 0.02);
 load('dataMu', 'avgData');
 index11 = (avgData(:, 1) == 0.1).*(avgData(:, 2) == 0.01);
 index12 = (avgData(:, 1) == 0.1).*(avgData(:, 2) == 0.02);
