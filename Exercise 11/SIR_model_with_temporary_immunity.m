@@ -81,7 +81,7 @@ end % Loop through trials.
 
 toc
 
-%% R_inf/5000 as a function of mu. 
+%% R_inf/5000 as a function of alpha. 
 load('dataAlpha', 'avgData');
 index11 = (avgData(:, 1) == 0.1).*(avgData(:, 2) == 0.01);
 index12 = (avgData(:, 1) == 0.1).*(avgData(:, 2) == 0.02);
