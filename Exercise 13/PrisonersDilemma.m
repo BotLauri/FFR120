@@ -1,9 +1,9 @@
-function yearsInPrison = PrisonersDilemma(n, m, N)
+function yearsInPrison = PrisonersDilemma(m, n, N, R)
     % Initialization.
-    T = 0; R = 0.5; P = 1; S = 1.5;
+    T = 0; P = 1; S = 1.5;
     yearsInPrison = 0;
-    playerA = [ones(1, n), zeros(1, N-n)];
-    playerB = [ones(1, m), zeros(1, N-m)];
+    playerA = [ones(1, m), zeros(1, N-m)];
+    playerB = [ones(1, n), zeros(1, N-n)];
     
     % Game loop.
     for i = 1:N

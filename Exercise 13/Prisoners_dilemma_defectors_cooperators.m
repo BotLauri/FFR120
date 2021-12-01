@@ -1,64 +1,20 @@
 %% Prisoner's dilemma on a lattice.
 clear all
 tic
-L = 30; N = 7; mu = 0; timesteps = 20; R = 0.9;
-numberOfInitialDefectors = 3*3;
+L = 30; N = 7; mu = 0.01; timesteps = 30; R = 0.82;
 
-% Initialization. 
-if (numberOfInitialDefectors == 1)
-    lattice = N*ones(L);
-    lattice(ceil(L/2), ceil(L/2)) = 0;
-    originalLattice = lattice;
+% Initialization.
+lattice = zeros(L);
+for i = 1:L
+    for j = 1:L
+        if (rand() < 0.5)
+            lattice(i, j) = 0;
+        else
+            lattice(i, j) = N;
+        end
+    end
 end
-if (numberOfInitialDefectors == 2)
-    lattice = N*ones(L);
-    lattice(ceil(L/3), ceil(2*L/3)) = 0;
-    lattice(ceil(2*L/3), ceil(L/3)) = 0;
-    originalLattice = lattice;
-end
-if (numberOfInitialDefectors == 3)
-    lattice = N*ones(L);
-    lattice(ceil(L/2), ceil(L/2)) = 0;
-    lattice(ceil(L/4), ceil(3*L/4)) = 0;
-    lattice(ceil(3*L/4), ceil(L/4)) = 0;
-    originalLattice = lattice;
-end
-if (numberOfInitialDefectors == 4)
-    lattice = N*ones(L);
-    lattice(ceil(L/5), ceil(4*L/5)) = 0;
-    lattice(ceil(2*L/5), ceil(3*L/5)) = 0;
-    lattice(ceil(3*L/5), ceil(2*L/5)) = 0;
-    lattice(ceil(4*L/5), ceil(L/5)) = 0;
-    originalLattice = lattice;
-end
-if (numberOfInitialDefectors == 6)
-    lattice = N*ones(L);
-    lattice(ceil(L/5), ceil(4*L/5)) = 0;
-    lattice(ceil(2*L/5), ceil(3*L/5)) = 0;
-    lattice(ceil(3*L/5), ceil(2*L/5)) = 0;
-    lattice(ceil(4*L/5), ceil(L/5)) = 0;
-    lattice(ceil(L/5), ceil(L/5)) = 0;
-    lattice(ceil(4*L/5), ceil(4*L/5)) = 0;
-    originalLattice = lattice;
-end
-if (numberOfInitialDefectors == L*L-1)
-    lattice = zeros(L);
-    lattice(ceil(L/2), ceil(L/2)) = N;
-    originalLattice = lattice;
-end
-if (numberOfInitialDefectors == 3*3)
-    lattice = zeros(L);
-    lattice(ceil(L/2)-1, ceil(L/2)-1) = N;
-    lattice(ceil(L/2)-1, ceil(L/2)) = N;
-    lattice(ceil(L/2)-1, ceil(L/2)+1) = N;
-    lattice(ceil(L/2), ceil(L/2)-1) = N;
-    lattice(ceil(L/2), ceil(L/2)) = N;
-    lattice(ceil(L/2), ceil(L/2)+1) = N;
-    lattice(ceil(L/2)+1, ceil(L/2)-1) = N;
-    lattice(ceil(L/2)+1, ceil(L/2)) = N;
-    lattice(ceil(L/2)+1, ceil(L/2)+1) = N;
-    originalLattice = lattice;
-end
+originalLattice = lattice;
 
 for t = 1:timesteps
     
@@ -156,7 +112,11 @@ for t = 1:timesteps
     for i = 1:L
         for j = 1:L
             if (rand() < mu)
-                lattice(i, j) = randi(N+1) - 1;
+                if (rand() < 0.5)
+                    lattice(i, j) = 0;
+                else
+                    lattice(i, j) = N;
+                end
             end
         end
     end
@@ -180,22 +140,6 @@ pbaspect([1 1 1])
 subplot(1, 2, 2)
 imagesc(lattice)
 colorbar
-ylabel('t = 20')
-title('Initial defectors: ', strcat(num2str(numberOfInitialDefectors, 2)))
-pbaspect([1 1 1])
-
-%% Plots with different R.
-colormap(flipud(gray))
-subplot(1, 2, 1)
-imagesc(originalLattice)
-colorbar
-ylabel('t = 0')
-title('R: ', strcat(num2str(R, 2)))
-pbaspect([1 1 1])
-
-subplot(1, 2, 2)
-imagesc(lattice)
-colorbar
 ylabel('t = 30')
-title('R: ', strcat(num2str(R, 2)))
+title('Initial defectors: ', strcat(num2str(numberOfInitialDefectors, 2)))
 pbaspect([1 1 1])
