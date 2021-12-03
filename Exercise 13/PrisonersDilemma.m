@@ -1,6 +1,9 @@
-function yearsInPrison = PrisonersDilemma(m, n, N, R)
+function yearsInPrison = PrisonersDilemma(m, n, N, R, S)
+    if ~exist('S', 'var')
+        S = 1.5;
+    end
     % Initialization.
-    T = 0; P = 1; S = 1.5;
+    T = 0; P = 1; 
     yearsInPrison = 0;
     playerA = [ones(1, m), zeros(1, N-m)];
     playerB = [ones(1, n), zeros(1, N-n)];
