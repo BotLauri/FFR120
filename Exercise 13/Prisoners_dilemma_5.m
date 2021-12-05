@@ -1,8 +1,26 @@
 %% Prisoner's dilemma on a lattice.
+% 35-45 sec per simulation with parfor. 
+
 clear all
 tic
-L = 30; N = 7; mu = 0.01; timesteps = 50; R = 0.72; S = 1.5;
+L = 30; N = 7; mu = 0.01; timesteps = 500;
 
+Rs = 0.01:0.1:0.99;
+Ss = 1:0.3:3; 
+%Rs = [0.1, 0.3];
+%Ss = [1, 2];
+
+dataStrategies = zeros(timesteps,  N + 4, length(Rs)*length(Ss));
+
+for r = 1:length(Rs)
+    
+disp(r)
+dataCurrentStrategies = zeros(timesteps,  N + 4, length(Ss));
+    
+parfor s = 1:length(Ss)
+    
+R = Rs(r);
+S = Ss(s);
 % Initialization.
 lattice = zeros(L);
 for i = 1:L
@@ -10,9 +28,7 @@ for i = 1:L
         lattice(i, j) = randi(N+1) - 1;
     end
 end
-originalLattice = lattice;
 
-dataStrategies = zeros(timesteps, N+1);
 for t = 1:timesteps
     
     % Competition.
@@ -114,57 +130,69 @@ for t = 1:timesteps
         end
     end
     
-    currentStrategies = zeros(1, N+1);
+    currentStrategies = zeros(1, N+4);
+    currentStrategies(1) = R;
+    currentStrategies(2) = S;
+    currentStrategies(3) = t;
     for i = 1:N+1
-        currentStrategies(i) = sum(lattice(:) == i);
+        currentStrategies(i+3) = sum(lattice(:) == i-1);
     end
-        
-    dataStrategies(t, :) = currentStrategies;
+    dataCurrentStrategies(t, :, s) = currentStrategies;
+    
+    if rem(t, 100) == 0
+        disp(t)
+    end
     
 end % Time loop.
+end % S loop. 
 
-colormap('jet')
-imagesc(lattice)
+dataStrategies(:, :, (r - 1)*length(Ss) + 1:(r - 1)*length(Ss) + length(Ss)) = dataCurrentStrategies;
+
+end % R loop.
+
+save('dataStrategies', 'dataStrategies');
 
 toc
 
-%% Plots with different R.
-colormap('jet')
-subplot(1, 3, 1)
-imagesc(originalLattice)
-colorbar
-ylabel('t = 0')
-title('R: ', strcat(num2str(R, 2)))
-pbaspect([1 1 1])
+%% Plot for each of the variances. 
+dataStrategies = struct2cell(load('dataStrategies', 'dataStrategies'));
+data = dataStrategies{1};
+data = data(101:500, :, :);
+variances = var(data);
+Rs = 0.01:0.1:0.99;
+Ss = 1:0.3:3; 
 
-subplot(1, 3, 2)
-imagesc(lattice)
-colorbar
-ylabel('t = 100')
-title('R: ', strcat(num2str(R, 2)))
-pbaspect([1 1 1])
-
-
-colors = jet(N+1);
-subplot(1, 3, 3)
 hold on
-for i = 1:N+1
-    plot(1:1:timesteps, dataStrategies(:,i), 'color', colors(i,:))
-end
+for n = 1:N+1
+    subplot(2, 4, n)
+    varI = reshape(variances(:, n+3, :), [length(Ss), length(Rs)]);
+    imagesc([0.01, 0.99], [1, 3], varI);
+    set(gca, 'YDir', 'normal')
+    colormap('jet')
+    pbaspect([1 1 1])
+    colorbar
+    xlabel('R')
+    ylabel('S')
+    title(strcat("\sigma_", int2str(n), "^2"))
+end 
 hold off
 
-%% Plots with different S (and R = 0.84).
-colormap('jet')
-subplot(1, 2, 1)
-imagesc(originalLattice)
-colorbar
-ylabel('t = 0')
-title('R = 0.84, S: ', strcat(num2str(S, 3)))
-pbaspect([1 1 1])
+%% Plot for sum_n > 1000. 
+dataStrategies = struct2cell(load('dataStrategies', 'dataStrategies'));
+data = dataStrategies{1};
+data = data(101:500, :, :);
+variances = var(data);
 
-subplot(1, 2, 2)
-imagesc(lattice)
-colorbar
-ylabel('t = 100')
-title('R = 0.84, S: ', strcat(num2str(S, 3)))
+varSum = zeros(1, length(Ss)*length(Rs));
+for t = 1:length(Ss)*length(Rs)
+    varSum(t) = sum(variances(:, 4:11, t)) > 1000;
+end
+varSums = reshape(varSum, [length(Ss), length(Rs)]);
+imagesc([0.01, 0.99], [1, 3], varSums);
+set(gca, 'YDir', 'normal')
+colormap(flipud(gray))
 pbaspect([1 1 1])
+colorbar
+xlabel('R')
+ylabel('S')
+title("\Sigma\sigma_n^2 > 1000")

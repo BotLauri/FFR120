@@ -1,7 +1,14 @@
 %% Prisoner's dilemma on a lattice.
+% The three main regimes are (for constant S):
+% All cooperators for low R. 
+% A mix of different strategies for R in a "lagom" range. 
+% All defectors for high R. 
+% These regimes are the evolutionary stable strategies for each particular
+% environment (value of R).
+
 clear all
 tic
-L = 30; N = 7; mu = 0.01; timesteps = 100; R = 0.8; S = 1.5;
+L = 30; N = 7; mu = 0.01; timesteps = 100; R = 0.73; S = 1.5;
 
 % Initialization.
 lattice = zeros(L);
@@ -147,20 +154,4 @@ xlabel('t')
 ylabel('N_n')
 title('Number of agents (N) with a particular strategy (n).')
 hold off
-pbaspect([1 1 1])
-
-%% Plots with different S (and R = 0.84).
-colormap('jet')
-subplot(1, 2, 1)
-imagesc(originalLattice)
-colorbar
-ylabel('t = 0')
-title('R = 0.84, S: ', strcat(num2str(S, 3)))
-pbaspect([1 1 1])
-
-subplot(1, 2, 2)
-imagesc(lattice)
-colorbar
-ylabel('t = 100')
-title('R = 0.84, S: ', strcat(num2str(S, 3)))
 pbaspect([1 1 1])
