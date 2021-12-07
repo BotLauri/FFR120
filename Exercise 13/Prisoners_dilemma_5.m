@@ -5,8 +5,8 @@ clear all
 tic
 L = 30; N = 7; mu = 0.01; timesteps = 500;
 
-Rs = 0.01:0.1:0.99;
-Ss = 1:0.3:3; 
+Rs = 0.01:0.03:0.99;
+Ss = 1:0.06:3; 
 %Rs = [0.1, 0.3];
 %Ss = [1, 2];
 
@@ -150,7 +150,7 @@ dataStrategies(:, :, (r - 1)*length(Ss) + 1:(r - 1)*length(Ss) + length(Ss)) = d
 
 end % R loop.
 
-save('dataStrategies', 'dataStrategies');
+%save('dataStrategies', 'dataStrategies');
 
 toc
 
@@ -159,8 +159,8 @@ dataStrategies = struct2cell(load('dataStrategies', 'dataStrategies'));
 data = dataStrategies{1};
 data = data(101:500, :, :);
 variances = var(data);
-Rs = 0.01:0.1:0.99;
-Ss = 1:0.3:3; 
+Rs = 0.01:0.03:0.99;
+Ss = 1:0.06:3; 
 
 hold on
 for n = 1:N+1
@@ -173,11 +173,11 @@ for n = 1:N+1
     colorbar
     xlabel('R')
     ylabel('S')
-    title(strcat("\sigma_", int2str(n), "^2"))
+    title(strcat("\sigma_", int2str(n-1), "^2"))
 end 
 hold off
 
-%% Plot for sum_n > 1000. 
+%% Plot for sum_n > 10000. 
 dataStrategies = struct2cell(load('dataStrategies', 'dataStrategies'));
 data = dataStrategies{1};
 data = data(101:500, :, :);
@@ -185,7 +185,7 @@ variances = var(data);
 
 varSum = zeros(1, length(Ss)*length(Rs));
 for t = 1:length(Ss)*length(Rs)
-    varSum(t) = sum(variances(:, 4:11, t)) > 1000;
+    varSum(t) = sum(variances(:, 4:11, t)) > 10000;
 end
 varSums = reshape(varSum, [length(Ss), length(Rs)]);
 imagesc([0.01, 0.99], [1, 3], varSums);
@@ -195,4 +195,4 @@ pbaspect([1 1 1])
 colorbar
 xlabel('R')
 ylabel('S')
-title("\Sigma\sigma_n^2 > 1000")
+title("\Sigma\sigma_n^2 > 10000")
